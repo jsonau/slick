@@ -60,6 +60,8 @@
                 swipe: true,
                 touchMove: true,
                 touchThreshold: 5,
+                touchPreciseScroll: false,
+                touchPreciseScrollThreshold: 5,
                 vertical: false
             };
 
@@ -1399,14 +1401,18 @@
                 $(event.target).off("click.slick");
             });
 
+            var slidesToScroll = _.options.touchPreciseScroll ?
+                Math.ceil(_.touchObject.swipeLength/_.slideWidth) :
+                _.options.slidesToScroll;
+
             switch (_.swipeDirection()) {
                 case 'left':
-                    _.slideHandler(_.currentSlide + _.options.slidesToScroll);
+                    _.slideHandler(_.currentSlide + slidesToScroll);
                     _.touchObject = {};
                 break;
 
                 case 'right':
-                    _.slideHandler(_.currentSlide - _.options.slidesToScroll);
+                    _.slideHandler(_.currentSlide - slidesToScroll);
                     _.touchObject = {};
                 break;
             }
@@ -1427,8 +1433,9 @@
                 event.originalEvent.touches.length : 1;
         }
 
-        _.touchObject.minSwipe = _.listWidth / _.options
-            .touchThreshold;
+        _.touchObject.minSwipe = _.options.touchPreciseScroll ?
+            _.listWidth / _.slideCount * ((10 - _.options.touchPreciseScrollThreshold) * .1) :
+            _.listWidth / _.options.touchThreshold;
 
         switch (event.data.action) {
 
